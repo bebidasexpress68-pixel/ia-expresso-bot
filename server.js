@@ -32,10 +32,6 @@ const client = new Client({
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
       '--disable-gpu'
     ]
   }
@@ -58,7 +54,6 @@ client.on('qr', async (qr) => {
 client.on('ready', () => {
 
   console.log('✅ WhatsApp conectado!')
-  console.log(`Conta: ${client.info.pushname}`)
 
 })
 
@@ -79,13 +74,6 @@ client.on('disconnected', (reason) => {
 // ================================================
 client.on('message', async (msg) => {
 
-  if (msg.fromMe) return
-  if (msg.from.includes('@g.us')) return
-
-  const text = msg.body.toLowerCase()
-
-client.on('message', async (msg) => {
-
   // ignorar mensagens enviadas por você
   if (msg.fromMe) return
 
@@ -98,7 +86,7 @@ client.on('message', async (msg) => {
 
   if (now - msg.timestamp > fiveMinutes) return
 
-  console.log("Mensagem recebida:", msg.body)
+  console.log("📩 Mensagem recebida:", msg.body)
 
   msg.reply("Mensagem recebida 👍")
 
@@ -110,9 +98,7 @@ client.on('message', async (msg) => {
 app.get('/qr', (req, res) => {
 
   if (!qrImage) {
-
-    return res.send("QR ainda não gerado. Aguarde ou reinicie o servidor.")
-
+    return res.send("QR ainda não gerado. Aguarde.")
   }
 
   res.send(`
@@ -127,7 +113,7 @@ app.get('/qr', (req, res) => {
 })
 
 // ================================================
-// Health Check
+// Health check
 // ================================================
 app.get('/health', (req, res) => {
 
@@ -151,3 +137,12 @@ app.listen(PORT, () => {
 
 // iniciar whatsapp
 client.initialize()
+
+// ================================================
+// Keep alive (evita Railway desligar container)
+// ================================================
+setInterval(() => {
+
+  console.log("🟢 Servidor ativo")
+
+}, 30000)
