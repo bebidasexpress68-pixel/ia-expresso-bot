@@ -84,7 +84,7 @@ client.on('message', async (msg) => {
 
   const text = msg.body.toLowerCase()
 
-  console.log(`📩 ${msg.from}: ${text}`)
+  console.log("Mensagem recebida:", text)
 
   if (text.includes("oi") || text.includes("ola")) {
 
