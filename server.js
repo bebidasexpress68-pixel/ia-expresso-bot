@@ -1,3 +1,7 @@
+// ================================================
+// IA EXPRESSO — Servidor Principal
+// ================================================
+
 require('dotenv').config()
 
 const express = require('express')
@@ -10,6 +14,9 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+// ================================================
+// QR Code storage
+// ================================================
 let qrImage = null
 
 // ================================================
@@ -70,7 +77,7 @@ client.on('disconnected', (reason) => {
 // ================================================
 // Receber mensagens
 // ================================================
-client.on('message_create', async (msg) => {
+client.on('message', async (msg) => {
 
   if (msg.fromMe) return
   if (msg.from.includes('@g.us')) return
@@ -81,13 +88,31 @@ client.on('message_create', async (msg) => {
 
   if (text.includes("oi") || text.includes("ola")) {
 
-    msg.reply("🍺 Olá! Bem-vindo à Expresso Bebidas. Como posso ajudar?")
+    msg.reply("🍺 Olá! Bem-vindo à Expresso Bebidas!\n\nDigite:\n1️⃣ Ver cervejas\n2️⃣ Promoções\n3️⃣ Falar com atendente")
+
+  }
+
+  if (text === "1") {
+
+    msg.reply("🍺 Temos:\n\nHeineken\nBudweiser\nCorona\nStella\n\nQual você prefere?")
 
   }
 
   if (text.includes("cerveja")) {
 
-    msg.reply("Temos várias cervejas 🍺\nHeineken\nBudweiser\nCorona\n\nQual você prefere?")
+    msg.reply("🍺 Temos várias cervejas!\n\nHeineken\nBudweiser\nCorona\n\nQual você prefere?")
+
+  }
+
+  if (text === "2") {
+
+    msg.reply("🔥 Promoção do dia:\n\nHeineken Long Neck\n6 unidades por R$39,90")
+
+  }
+
+  if (text === "3") {
+
+    msg.reply("👨‍💼 Vou chamar um atendente para você.")
 
   }
 
@@ -99,7 +124,9 @@ client.on('message_create', async (msg) => {
 app.get('/qr', (req, res) => {
 
   if (!qrImage) {
-    return res.send("QR ainda não gerado. Reinicie o servidor.")
+
+    return res.send("QR ainda não gerado. Aguarde ou reinicie o servidor.")
+
   }
 
   res.send(`
@@ -131,7 +158,9 @@ app.get('/health', (req, res) => {
 const PORT = process.env.PORT || 8080
 
 app.listen(PORT, () => {
+
   console.log(`🚀 Servidor rodando na porta ${PORT}`)
+
 })
 
 // iniciar whatsapp
