@@ -29,13 +29,14 @@ const client = new Client({
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
-      '--disable-gpu'
+      '--disable-gpu',
+      '--single-process'
     ]
   }
 })
 
 // ================================================
-// QR recebido
+// QR CODE
 // ================================================
 client.on('qr', async (qr) => {
 
@@ -46,7 +47,7 @@ client.on('qr', async (qr) => {
 })
 
 // ================================================
-// WhatsApp conectado
+// CONECTADO
 // ================================================
 client.on('ready', () => {
 
@@ -55,7 +56,7 @@ client.on('ready', () => {
 })
 
 // ================================================
-// Reconectar se cair
+// DESCONECTADO
 // ================================================
 client.on('disconnected', (reason) => {
 
@@ -68,28 +69,37 @@ client.on('disconnected', (reason) => {
 // ================================================
 // RECEBER MENSAGENS
 // ================================================
-client.on('message_create', async (msg) => {
+client.on('message', async (msg) => {
 
-  if (msg.fromMe) return
-  if (msg.from.includes('@g.us')) return
+  try {
 
-  const now = Math.floor(Date.now() / 1000)
+    if (msg.fromMe) return
 
-  if (now - msg.timestamp > 60) return
+    if (msg.from.includes('@g.us')) return
 
-  console.log("📩 Mensagem recebida:", msg.body)
+    const text = msg.body || ""
 
-  msg.reply("Mensagem recebida 👍")
+    console.log("📩 Mensagem recebida:", text)
+
+    await msg.reply("🤖 Bot funcionando!")
+
+  } catch (err) {
+
+    console.log("Erro ao responder:", err)
+
+  }
 
 })
 
 // ================================================
-// Página QR
+// PAGINA QR
 // ================================================
 app.get('/qr', (req, res) => {
 
   if (!qrImage) {
-    return res.send("QR ainda não gerado.")
+
+    return res.send("QR ainda não gerado")
+
   }
 
   res.send(`
@@ -104,18 +114,19 @@ app.get('/qr', (req, res) => {
 })
 
 // ================================================
-// Health
+// HEALTH CHECK
 // ================================================
 app.get('/health', (req, res) => {
 
   res.json({
-    status: "ok"
+    status: "ok",
+    whatsapp: client.info ? "connected" : "connecting"
   })
 
 })
 
 // ================================================
-// Servidor
+// SERVER
 // ================================================
 const PORT = process.env.PORT || 8080
 
@@ -128,7 +139,7 @@ app.listen(PORT, () => {
 client.initialize()
 
 // ================================================
-// Keep Alive Railway
+// KEEP ALIVE
 // ================================================
 setInterval(() => {
 
