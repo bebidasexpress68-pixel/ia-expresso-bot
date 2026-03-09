@@ -84,37 +84,23 @@ client.on('message', async (msg) => {
 
   const text = msg.body.toLowerCase()
 
-  console.log("Mensagem recebida:", text)
+client.on('message', async (msg) => {
 
-  if (text.includes("oi") || text.includes("ola")) {
+  // ignorar mensagens enviadas por você
+  if (msg.fromMe) return
 
-    msg.reply("🍺 Olá! Bem-vindo à Expresso Bebidas!\n\nDigite:\n1️⃣ Ver cervejas\n2️⃣ Promoções\n3️⃣ Falar com atendente")
+  // ignorar grupos
+  if (msg.from.includes('@g.us')) return
 
-  }
+  // ignorar mensagens antigas
+  const fiveMinutes = 60 * 5
+  const now = Math.floor(Date.now() / 1000)
 
-  if (text === "1") {
+  if (now - msg.timestamp > fiveMinutes) return
 
-    msg.reply("🍺 Temos:\n\nHeineken\nBudweiser\nCorona\nStella\n\nQual você prefere?")
+  console.log("Mensagem recebida:", msg.body)
 
-  }
-
-  if (text.includes("cerveja")) {
-
-    msg.reply("🍺 Temos várias cervejas!\n\nHeineken\nBudweiser\nCorona\n\nQual você prefere?")
-
-  }
-
-  if (text === "2") {
-
-    msg.reply("🔥 Promoção do dia:\n\nHeineken Long Neck\n6 unidades por R$39,90")
-
-  }
-
-  if (text === "3") {
-
-    msg.reply("👨‍💼 Vou chamar um atendente para você.")
-
-  }
+  msg.reply("Mensagem recebida 👍")
 
 })
 
