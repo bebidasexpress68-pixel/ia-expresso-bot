@@ -14,9 +14,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// ================================================
-// QR Code storage
-// ================================================
 let qrImage = null
 
 // ================================================
@@ -38,11 +35,11 @@ const client = new Client({
 })
 
 // ================================================
-// QR Code recebido
+// QR recebido
 // ================================================
 client.on('qr', async (qr) => {
 
-  console.log('📱 QR recebido')
+  console.log("📱 QR recebido")
 
   qrImage = await QRCode.toDataURL(qr)
 
@@ -53,7 +50,7 @@ client.on('qr', async (qr) => {
 // ================================================
 client.on('ready', () => {
 
-  console.log('✅ WhatsApp conectado!')
+  console.log("✅ WhatsApp conectado!")
 
 })
 
@@ -62,29 +59,23 @@ client.on('ready', () => {
 // ================================================
 client.on('disconnected', (reason) => {
 
-  console.log('❌ WhatsApp desconectado:', reason)
-  console.log('🔄 Reconectando...')
+  console.log("❌ WhatsApp desconectado:", reason)
 
   client.initialize()
 
 })
 
 // ================================================
-// Receber mensagens
+// RECEBER MENSAGENS
 // ================================================
-client.on('message', async (msg) => {
+client.on('message_create', async (msg) => {
 
-  // ignorar mensagens enviadas por você
   if (msg.fromMe) return
-
-  // ignorar grupos
   if (msg.from.includes('@g.us')) return
 
-  // ignorar mensagens antigas
-  const fiveMinutes = 60 * 5
   const now = Math.floor(Date.now() / 1000)
 
-  if (now - msg.timestamp > fiveMinutes) return
+  if (now - msg.timestamp > 60) return
 
   console.log("📩 Mensagem recebida:", msg.body)
 
@@ -98,48 +89,46 @@ client.on('message', async (msg) => {
 app.get('/qr', (req, res) => {
 
   if (!qrImage) {
-    return res.send("QR ainda não gerado. Aguarde.")
+    return res.send("QR ainda não gerado.")
   }
 
   res.send(`
-    <html>
-      <body style="text-align:center;font-family:sans-serif">
-        <h2>Escaneie com seu WhatsApp</h2>
-        <img src="${qrImage}" />
-      </body>
-    </html>
+  <html>
+  <body style="text-align:center;font-family:sans-serif">
+  <h2>Escaneie com seu WhatsApp</h2>
+  <img src="${qrImage}">
+  </body>
+  </html>
   `)
 
 })
 
 // ================================================
-// Health check
+// Health
 // ================================================
 app.get('/health', (req, res) => {
 
   res.json({
-    status: "ok",
-    whatsapp: client.info ? "connected" : "connecting"
+    status: "ok"
   })
 
 })
 
 // ================================================
-// Inicializar servidor
+// Servidor
 // ================================================
 const PORT = process.env.PORT || 8080
 
 app.listen(PORT, () => {
 
-  console.log(`🚀 Servidor rodando na porta ${PORT}`)
+  console.log("🚀 Servidor rodando na porta", PORT)
 
 })
 
-// iniciar whatsapp
 client.initialize()
 
 // ================================================
-// Keep alive (evita Railway desligar container)
+// Keep Alive Railway
 // ================================================
 setInterval(() => {
 
