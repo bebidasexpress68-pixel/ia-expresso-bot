@@ -1,7 +1,3 @@
-// ================================================
-// IA EXPRESSO — Servidor Principal
-// ================================================
-
 require('dotenv').config()
 
 const express = require('express')
@@ -14,9 +10,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// ================================================
-// QR Code storage
-// ================================================
 let qrImage = null
 
 // ================================================
@@ -70,13 +63,7 @@ client.on('disconnected', (reason) => {
   console.log('❌ WhatsApp desconectado:', reason)
   console.log('🔄 Reconectando...')
 
-const PORT = process.env.PORT || 8080;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-});
-
-client.initialize();
+  client.initialize()
 
 })
 
@@ -112,9 +99,7 @@ client.on('message_create', async (msg) => {
 app.get('/qr', (req, res) => {
 
   if (!qrImage) {
-
     return res.send("QR ainda não gerado. Reinicie o servidor.")
-
   }
 
   res.send(`
@@ -143,12 +128,10 @@ app.get('/health', (req, res) => {
 // ================================================
 // Inicializar servidor
 // ================================================
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
 
 app.listen(PORT, () => {
-
   console.log(`🚀 Servidor rodando na porta ${PORT}`)
-
 })
 
 // iniciar whatsapp
