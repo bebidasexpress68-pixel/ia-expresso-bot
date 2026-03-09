@@ -77,7 +77,7 @@ client.on('disconnected', (reason) => {
 // ================================================
 // Receber mensagens
 // ================================================
-client.on('message', async (msg) => {
+client.on('message_create', async (msg) => {
 
   if (msg.fromMe) return
   if (msg.from.includes('@g.us')) return
