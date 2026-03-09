@@ -70,7 +70,13 @@ client.on('disconnected', (reason) => {
   console.log('❌ WhatsApp desconectado:', reason)
   console.log('🔄 Reconectando...')
 
-  client.initialize()
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+});
+
+client.initialize();
 
 })
 
